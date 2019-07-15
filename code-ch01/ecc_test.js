@@ -25,4 +25,20 @@ describe('FieldElement', function() {
             assert.deepEqual(fieldElement1.sub(fieldElement2), resultFieldElement);
         });
     });
+    describe('#mul()', function() {
+        it('should multiply FieldElement', function() {
+            let fieldElement1 = new FieldElement(24, 31);
+            let fieldElement2 = new FieldElement(19, 31);
+            let resultFieldElement = new FieldElement(22, 31);
+            assert.deepEqual(fieldElement1.mul(fieldElement2), resultFieldElement);
+        });
+    });
+    describe('#pow()', function() {
+        it('should power a number', function() {
+            let fieldElement1 = new FieldElement(17, 31);
+            let power = 3;
+            let resultFieldElement = new FieldElement(15, 31);
+            assert.deepEqual(fieldElement1.pow(power), resultFieldElement);
+        });
+    });
 });
