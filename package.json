@@ -1,0 +1,11 @@
+{
+  "name": "programmingbitcoinjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:arjunaskykok/programmingbitcoinjs.git",
+  "author": "Arjuna Sky Kok <direktur@langitbiruarjuna.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "^6.1.4"
+  }
+}
