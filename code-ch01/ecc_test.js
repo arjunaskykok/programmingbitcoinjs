@@ -41,4 +41,12 @@ describe('FieldElement', function() {
             assert.deepEqual(fieldElement1.pow(power), resultFieldElement);
         });
     });
+    describe('#div()', function() {
+        it('should divide FieldElement', function() {
+            let fieldElement1 = new FieldElement(3, 31);
+            let fieldElement2 = new FieldElement(24, 31);
+            let resultFieldElement = new FieldElement(4, 31);
+            assert.deepEqual(fieldElement1.div(fieldElement2), resultFieldElement);
+        });
+    });
 });

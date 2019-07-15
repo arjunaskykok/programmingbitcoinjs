@@ -40,5 +40,13 @@ module.exports = class FieldElement {
         let num = mod(Math.pow(this.num, power), this.prime);
         return new FieldElement(num, this.prime);
     }
+
+    div(other) {
+        if (this.prime !== other.prime) {
+            throw new Error("Cannot divide two numbers in different Fields")
+        }
+        let num = mod(this.num * mod(Math.pow(other.num, this.prime - 2), this.prime), this.prime)
+        return new FieldElement(num, this.prime);
+    }
 }
 
