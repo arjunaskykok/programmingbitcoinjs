@@ -6,6 +6,7 @@
   "author": "Arjuna Sky Kok <direktur@langitbiruarjuna.com>",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.14",
     "mocha": "^6.1.4"
   }
 }
