@@ -1,9 +1,14 @@
 const ecc = require('./ecc.js');
 var assert = require('assert');
-var expect = require('expect');
 
 const FieldElement = ecc.FieldElement;
 const Point = ecc.Point;
+
+const S256Field = ecc.S256Field;
+const S256Point = ecc.S256Point;
+const Signature = ecc.Signature;
+const G = ecc.G;
+const N = ecc.N;
 
 describe('FieldElement', function() {
     describe('#rmul()', function() {
@@ -57,6 +62,15 @@ describe('ECC', function() {
                 let point3 = new Point(x3, y3, a, b);
                 assert.deepEqual(point1.add(point2), point3);
             })
+        });
+    });
+});
+
+describe('S256Point', function() {
+    describe('order', function() {
+        it('should test order of group', function() {
+            let point = G.rmul(N);
+            assert.equal(point.x, null);
         });
     });
 });
