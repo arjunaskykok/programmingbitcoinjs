@@ -49,8 +49,7 @@ class FieldElement {
     }
 
     pow(power) {
-        let big_power = bigInt(power);
-        let exponent = mod(big_power, this.prime.subtract(1));
+        let exponent = mod(bigInt(power), this.prime.subtract(bigInt(1)));
         let num = mod(this.num.pow(exponent), this.prime);
         return new FieldElement(num, this.prime);
     }
@@ -59,7 +58,9 @@ class FieldElement {
         if (!_.isEqual(this.prime, other.prime)) {
             throw new Error("Cannot divide two numbers in different Fields")
         }
-        let num = mod(this.num.multiply(mod(other.num.pow(this.prime.subtract(2)), this.prime)), this.prime)
+        let modPowResult = other.num.modPow(this.prime.subtract(bigInt(2)), this.prime);
+        let fieldElementModPowResult = new FieldElement(modPowResult, this.prime);
+        let num = mod((mod(fieldElementModPowResult.rmul(this.num).num, this.prime)), this.prime);
         return new FieldElement(num, this.prime);
     }
 
@@ -114,8 +115,8 @@ class Point {
 
         if (!_.isEqual(this.x, other.x)) {
             let s = (other.y.subtract(this.y)).divide(other.x.subtract(this.x));
-            let x = s.pow(2).subtract(this.x).subtract(other.x);
-            let y = s.multiply(this.x.subtract(x)).subtract(this.y);
+            let x = (s.pow(2)).subtract(this.x).subtract(other.x);
+            let y = (s.multiply(this.x.subtract(x))).subtract(this.y);
             return new Point(x, y, this.a, this.b);
         }
 
@@ -125,8 +126,8 @@ class Point {
 
         if (_.isEqual(this, other)) {
             let s = (this.x.pow(2).rmul(3).add(this.a)).divide(this.y.rmul(2));
-            let x = s.pow(2).subtract(this.x.rmul(2));
-            let y = s.multiply(this.x.subtract(x)).subtract(this.y);
+            let x = (s.pow(2)).subtract(this.x.rmul(2));
+            let y = (s.multiply(this.x.subtract(x))).subtract(this.y);
             return new Point(x, y, this.a, this.b);
         }
     }
@@ -134,13 +135,13 @@ class Point {
     rmul(coefficient) {
         var coef = coefficient;
         var current = this;
-        var result = new Point(null, null, this.a, this.b)
-        while (coef.greater(bigInt(0))) {
-            if (coef & 1) {
-                result = result.add(current)
+        var result = new Point(null, null, this.a, this.b);
+        while (coef.greater(0)) {
+            if (coef.and(1).greater(0)) {
+                result = result.add(current);
             }
-            current = current.add(current)
-            coef = coef >> 1;
+            current = current.add(current);
+            coef = coef.shiftRight(1);
         }
         return result;
     }
@@ -148,7 +149,7 @@ class Point {
 
 let A = bigInt(0);
 let B = bigInt(7);
-let P = bigInt(2).pow(bigInt(256)).subtract(bigInt(2).pow(bigInt(32))).subtract(bigInt(977)); // 2**256 - 2**32 - 977
+let P = (bigInt(2).pow(bigInt(256)).subtract(bigInt(2).pow(bigInt(32)))).subtract(bigInt(977)); // 2**256 - 2**32 - 977
 let N = bigInt("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141", 16);
 
 class S256Field extends FieldElement {
