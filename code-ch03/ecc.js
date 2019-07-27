@@ -217,12 +217,11 @@ class S256Point extends Point {
     }
 
     verify(z, sig) {
-        let big_z = bigInt(z);
-        let s_inv = mod(sig.s.pow(N.subtract(2)), N);
-        let u = big_z.multiply(s_inv).remainder(N);
-        let v = sig.r.multiply(s_inv).remainder(N);
-        let total = (u.multiply(G)).add(this.rmul(v));
-        return total.x.num === sig.r;
+        let s_inv = mod(sig.s.modPow(N.subtract(2), N), N);
+        let u = mod(bigInt(z).multiply(s_inv), N);
+        let v = mod(sig.r.multiply(s_inv), N);
+        let total = (G.rmul(u)).add(this.rmul(v));
+        return _.isEqual(total.x.num, sig.r);
     }
 }
 
