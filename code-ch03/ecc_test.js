@@ -11,6 +11,8 @@ const Signature = ecc.Signature;
 const G = ecc.G;
 const N = ecc.N;
 
+const PrivateKey = ecc.PrivateKey;
+
 describe('FieldElement', function() {
     describe('#rmul()', function() {
         it('should rmul coefficient', function() {
@@ -103,6 +105,18 @@ describe('S256Point', function() {
             r = bigInt("eff69ef2b1bd93a66ed5219add4fb51e11a840f404876325a1e8ffe0529a2c", 16);
             s = bigInt("c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6", 16);
             assert.equal(point.verify(z, new Signature(r, s)), true);
+        });
+    });
+});
+
+describe("PrivateKey", function() {
+    describe("sign", function() {
+        it("should sign z", function() {
+            let pk = new PrivateKey(bigInt(7777));
+            let z = bigInt(8888888);
+            let signature = pk.sign(z);
+            let point = pk.point;
+            assert.equal(point.verify(z, signature), true);
         });
     });
 });

@@ -1,6 +1,7 @@
 const inspect = Symbol.for('nodejs.util.inspect.custom');
 const _ = require('lodash');
 const bigInt = require('big-integer');
+const crypto = require('crypto');
 
 function mod(n, m) {
     return ((n.remainder(m)).add(m)).remainder(m);
@@ -229,6 +230,71 @@ let G = new S256Point(
     bigInt("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 16),
     bigInt("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 16));
 
+class PrivateKey {
+    constructor(secret) {
+        this.secret = secret;
+        let tpoint = G.rmul(secret);
+        this.point = new S256Point(tpoint.x, tpoint.y, null, null);
+    }
+
+    hex() {
+        return ("0000000000000000000000000000000000000000000000000000000000000000" + this.secret.toString(16)).slice(-64);
+    }
+
+    sign(z) {
+        let k = this.deterministic_k(z);
+        let r = G.rmul(k).x.num;
+        let k_inv = mod(k.modPow(N.subtract(2), N), N);
+        let s = mod((z.add(this.secret.multiply(r))).multiply(k_inv), N);
+        if (s.greater(N.divide(2))) {
+            s = N.subtract(s);
+        }
+        return new Signature(r, s);
+    }
+
+    deterministic_k(z) {
+        let n = bigInt(Math.floor(Math.random() * N.toJSNumber()));
+        return n;
+        /*
+        var k = Buffer.alloc(32);
+        var v = Buffer.alloc(32, 1);
+        if (z.greater(N)) {
+            z = z.subtract(N);
+        }
+        let hex_z = z.toString(16);
+        let buffer_hex_z = Buffer.from(hex_z, 'hex');
+        let buffer_hex_z_length = buffer_hex_z.length;
+        var bytes_z = Buffer.alloc(32);
+        bytes_z.writeUIntBE(buffer_hex_z, 32 - buffer_hex_z_length);
+        let hex_s = this.secret.toString(16);
+        let buffer_hex_s = Buffer.from(hex_s, 'hex');
+        let buffer_hex_s_length = buffer_hex_s.length;
+        var bytes_s = Buffer.alloc(32);
+        bytes_s.writeUIntBE(buffer_hex_s, 32 - buffer_hex_s_length);
+
+        var hmac = crypto.createHmac('sha256', k);
+        hmac.update(v + Buffer.alloc(1, 1) + bytes_s + bytes_z);
+        k = hmac.digest();
+        hmac = crypto.createHmac('sha256', k);
+        hmac.update(v, 's256');
+        v = hmac.digest();
+        hmac = crypto.createHmac('sha256', k);
+        hmac.update(v + Buffer.alloc(1, 1) + bytes_s + bytes_z);
+        k = hmac.digest();
+        hmac = crypto.createHmac('sha256', k);
+        hmac.update(v, 's256');
+        v = hmac.digest();
+        var candidate = null;
+        while (true) {
+            hmac = crypto.createHmac('sha256', k);
+            hmac.update(v, 's256');
+            v = hmac.digest();
+        }
+        return hmac.digest();
+        */
+    }
+}
+
 exports.FieldElement = FieldElement;
 exports.Point = Point;
 exports.S256Field = S256Field;
@@ -236,3 +302,4 @@ exports.S256Point = S256Point;
 exports.Signature = Signature;
 exports.G = G;
 exports.N = N;
+exports.PrivateKey = PrivateKey;
